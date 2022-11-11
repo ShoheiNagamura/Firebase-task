@@ -1,0 +1,89 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {}
+
+header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid thistle;
+}
+
+.header-logo img {
+    width: 300px;
+}
+
+.header-nav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 100px;
+}
+
+.header-nav a {
+    text-decoration: none;
+}
+
+.header-nav ul li {
+    list-style: none;
+    margin-left: 40px;
+}
+
+
+main {
+    width: 100%;
+    height: 700px;
+    display: flex;
+}
+
+.output-area {
+    width: 60%;
+    margin: 5px;
+    border: 1px solid thistle;
+    border-radius: 5px;
+}
+
+#output li {
+    list-style: none;
+    border: 1px solid thistle;
+    margin: 8px;
+    padding: 10px;
+    box-shadow: -5px -5px 10px 0px rgba(255, 255, 255, 0.5), 5px 5px 10px 0px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+form {
+    width: 25%;
+    font-size: 18px;
+    display: flex;
+}
+
+fieldset {
+    padding: 10px;
+    border-radius: 20px;
+    margin-left: 30px;
+    text-align: center;
+
+}
+
+input {
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+textarea {
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+button {
+    background-color: thistle;
+    padding: 5px 40px;
+    font-size: 18px;
+    border-radius: 12px;
+    border-color: thistle;
+}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>動物お助けサイト</title>
+</head>
+
+<body>
+    <header>
+        <div class="header-logo">
+            <img src="./img/web_logo.png" alt="">
+        </div>
+        <div class="header-nav">
+            <ul>
+                <a href="#">
+                    <li>ペットお助けタイムライン</li>
+                </a>
+                <a href="#">
+                    <li>里親ご希望・その他お問合せはこちら</li>
+                </a>
+            </ul>
+        </div>
+    </header>
+
+    <main>
+        <!-- 出力場所 -->
+        <div class="output-area">
+            <ul id="output"></ul>
+        </div>
+
+        <!-- 入力場所を作成しよう -->
+        <form>
+            <fieldset>
+                <legend>情報提供</legend>
+                <div>
+                    <p>種別</p>
+                    <input type="text" id="animal_type">
+                </div>
+                <div>
+                    <p>見つけた場所</p>
+                    <input type="text" id="place">
+                </div>
+                <div>
+                    <p>備考</p>
+                    <textarea id="text" name="" id="" cols="60" rows="5"></textarea>
+                </div>
+                <div>
+                    <button type="button" id="send">投稿</button>
+                </div>
+            </fieldset>
+        </form>
+    </main>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="./js/main.js"></script>
+    <!-- <script src="js/paginathing.min.js"></script> -->
+
+    <script>
+        // 日時をいい感じの形式にする関数
+        function convertTimestampToDatetime(timestamp) {
+            const _d = timestamp ? new Date(timestamp * 1000) : new Date();
+            const Y = _d.getFullYear();
+            const m = (_d.getMonth() + 1).toString().padStart(2, '0');
+            const d = _d.getDate().toString().padStart(2, '0');
+            const H = _d.getHours().toString().padStart(2, '0');
+            const i = _d.getMinutes().toString().padStart(2, '0');
+            const s = _d.getSeconds().toString().padStart(2, '0');
+            return `${Y}/${m}/${d} ${H}:${i}:${s}`;
+        }
+    </script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            serverTimestamp,
+            query,
+            orderBy,
+            onSnapshot,
+        } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyANPQIRojyJgxtzY8IWtlg1OoJaQhfv1Fg",
+            authDomain: "pet-rescue-ee1aa.firebaseapp.com",
+            projectId: "pet-rescue-ee1aa",
+            storageBucket: "pet-rescue-ee1aa.appspot.com",
+            messagingSenderId: "453883737946",
+            appId: "1:453883737946:web:fb017477b597472d38e563"
+        };
+
+        // Initialize Firebase
+        // Firebaseとコードを接続
+        const app = initializeApp(firebaseConfig);
+
+        // FirebaseとDBを接続
+        const db = getFirestore(app);
+
+
+        $("#send").on("click", function () {
+            const postData = {
+                animal_type: $("#animal_type").val(),
+                place: $("#place").val(),
+                text: $("#text").val(),
+                time: serverTimestamp()
+            };
+
+            // addDoc使ってfirebaseにデータを保存
+            addDoc(collection(db, "rescue"), postData);
+
+            // 入力したテキストを初期化
+            $("#animal_type").val("");
+            $("#place").val("");
+            $("#text").val("");
+        });
+
+
+        const q = query(collection(db, "rescue"), orderBy("time", "desc"));
+
+        onSnapshot(q, (querySnapshot) => {
+            console.log(querySnapshot.docs);
+            const documents = [];
+
+            // querySnapshot.docsの中身を回してdocuments配列にオブジェクトとして入れる
+            querySnapshot.docs.forEach(function (doc) {
+                const document = {
+                    id: doc.id,
+                    data: doc.data(),
+                };
+                documents.push(document);
+            })
+            console.log(documents);
+
+            const htmlElements = [];
+            console.log(documents[1].data.time.seconds)
+
+            documents.forEach(function (document) {
+                htmlElements.push(`
+                <li id="${document.id}">
+                    <p>${convertTimestampToDatetime(document.data.time.seconds)}</p>
+                    <p>種別：${document.data.animal_type}</p>
+                    <p>見つけた場所：${document.data.place}</p>
+                    <p>状況：${document.data.text}</p>
+                </li>
+                `);
+            });
+
+            $("#output").html(htmlElements);
+        });
+
+    </script>
+
+</body>
+
+</html>
